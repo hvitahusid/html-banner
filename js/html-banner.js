@@ -16,7 +16,7 @@
     }
     referer = purl(referer, true);
 
-    referer_str = [referer.attr('host'), referer.attr('path')].join('');
+    var referer_str = [referer.attr('host'), referer.attr('path')].join('');
 
     var href = purl(url.param('href'), true);
     var href_params = href.param();

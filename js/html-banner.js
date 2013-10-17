@@ -1,5 +1,5 @@
 (function(window, document, $, undefined) {
-    'use scrict';
+    'use strict';
 
     var referer, ref_host;
 

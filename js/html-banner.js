@@ -17,8 +17,6 @@
             onClick: null
         }, this.config, this.url.param());
 
-        console.log(this.config);
-
         // Event Listenters:
         var _this = this;
         if(!this.config.disable_click) {

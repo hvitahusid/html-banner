@@ -1,35 +1,72 @@
-(function(window, document, $, undefined) {
+(function(global, $, undefined) {
     'use strict';
 
-    var referer, ref_host;
+    var HtmlBanner = function(config) {
+        this.config = typeof config === 'undefined' ? {} : config;
 
-    var url = purl(true);
+        this.url = purl(true);
 
-    if(url.param('referer')) {
-        referer = url.param('referer');
-    } else {
-        try {
-            referer = top.location.href;
-        } catch(e) {
-            referer = document.referrer;
+        this.referer = this.get_referer();
+
+        // Event Listenters:
+        var _this = this;
+        if(!this.config.disableClick) {
+            $(document).on('click', function() {
+                _this.onClick.apply(_this, []);
+            });
         }
-    }
-    referer = purl(referer, true);
+    };
 
-    var referer_str = [referer.attr('host'), referer.attr('path')].join('');
+    HtmlBanner.prototype.get_referer = function() {
+        if(this.config.referer) {
+            return purl(this.config.referer, true);
+        }
 
-    var href = purl(url.param('href'), true);
-    var href_params = href.param();
-    href_params.referer = referer_str;
+        var referer;
 
-    var href_str = href.attr('protocol') + '://' + href.attr('host') + href.attr('path') + '?' + $.param(href_params);
+        if(this.url.param('referer')) {
+            referer = this.url.param('referer');
+        } else {
+            try {
+                referer = top.location.href;
+            } catch(e) {
+                referer = document.referrer;
+            }
+        }
+        return purl(referer, true);
+    };
 
-    $(document).on('click', function() {
+    HtmlBanner.prototype.get_href = function() {
+        var href = purl(this.config.href || this.url.param('href'), true);
+        var href_params = href.param();
+
+        if(this.config.params) {
+            href_params = $.extend(href_params, this.config.params);
+        }
+
+        if(this.config.utm) {
+            var host = this.referer.attr('host').replace('www.', '');
+            href_params.utm_source = host;
+            href_params.utm_medium = 'banner';
+        }
+
+        return href.attr('protocol') + '://' + href.attr('host') + href.attr('path') + '?' + $.param(href_params);
+    };
+
+    HtmlBanner.prototype.onClick = function() {
+        var ref = [this.referer.attr('host'), this.referer.attr('path')].join('');
+
         if(typeof ga !== 'undefined') {
-            ga('send', 'event', referer_str, 'click');
+            ga('send', 'event', ref, 'click');
         }
 
-        window.open(href_str, '_NEW').focus();
-    });
+        if(this.config.onClick) {
+            this.config.onClick.apply(this, []);
+        }
 
-})(window, document, jQuery);
+        window.open(this.get_href(), '_NEW').focus();
+    };
+
+    global.HtmlBanner = HtmlBanner;
+
+})(window, jQuery);

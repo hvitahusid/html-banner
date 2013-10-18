@@ -4,13 +4,24 @@
     var HtmlBanner = function(config) {
         this.config = typeof config === 'undefined' ? {} : config;
 
+        // Parse banner url:
         this.url = purl(true);
 
-        this.referer = this.get_referer();
+        // Set default config and overwrite config options with url parameters if set:
+        this.config = $.extend({
+            href: null,
+            referer: null,
+            utm: false,
+            params: {},
+            disable_click: false,
+            onClick: null
+        }, this.config, this.url.param());
+
+        console.log(this.config);
 
         // Event Listenters:
         var _this = this;
-        if(!this.config.disableClick) {
+        if(!this.config.disable_click) {
             $(document).on('click', function() {
                 _this.onClick.apply(_this, []);
             });
@@ -18,14 +29,10 @@
     };
 
     HtmlBanner.prototype.get_referer = function() {
-        if(this.config.referer) {
-            return purl(this.config.referer, true);
-        }
-
         var referer;
 
-        if(this.url.param('referer')) {
-            referer = this.url.param('referer');
+        if(this.config.referer) {
+            referer = this.config.referer;
         } else {
             try {
                 referer = top.location.href;
@@ -37,15 +44,15 @@
     };
 
     HtmlBanner.prototype.get_href = function() {
-        var href = purl(this.config.href || this.url.param('href'), true);
+        var href = purl(this.config.href, true);
         var href_params = href.param();
 
         if(this.config.params) {
-            href_params = $.extend(href_params, this.config.params);
+            href_params = $.extend(this.config.params, href_params);
         }
 
         if(this.config.utm) {
-            var host = this.referer.attr('host').replace('www.', '');
+            var host = this.get_referer().attr('host').replace('www.', '');
             href_params.utm_source = host;
             href_params.utm_medium = 'banner';
         }
@@ -54,10 +61,11 @@
     };
 
     HtmlBanner.prototype.onClick = function() {
-        var ref = [this.referer.attr('host'), this.referer.attr('path')].join('');
+        var ref = this.get_referer();
+        var ref_str = [ref.attr('host'), ref.attr('path')].join('');
 
         if(typeof ga !== 'undefined') {
-            ga('send', 'event', ref, 'click');
+            ga('send', 'event', ref_str, 'click');
         }
 
         if(this.config.onClick) {

@@ -16,16 +16,45 @@
             margin: 0 auto;
         }
 
-        #urlencoder input {
+        #urlencoder .field {
             width: 310px;
+            padding: 5px;
+            clear: both;
+            height: 32px;
+        }
+
+        #urlencoder .field label {
+            float: left;
+            width: 110px;
+            line-height: 33px;
+        }
+
+        #urlencoder .field input[type=checkbox] {
+            float: left;
+            margin-top: 8px;
+        }
+
+        #urlencoder .field input[type=text] {
+            float: left;
+            width: 200px;
             padding: 5px;
         }
 
-        #urlencoder div {
+        #urlencoder .field i {
+            float: left;
+            margin-left: 10px;
+            font-style: normal;
+            line-height: 33px;
+            color: grey;
+        }
+
+        #urlencoder .url {
             background-color: #efefef;
-            border: 1px dotted grey;
             margin-top: 10px;
-            padding: 5px
+            padding: 5px;
+            overflow: scroll;
+            overflow-y: auto;
+            white-space: pre;
         }
     </style>
 </head>
@@ -34,16 +63,59 @@
     <iframe src="index.html?href=http%3A%2F%2Fdjango.is%2F%3Ffoo%3Dbar"></iframe>
 
     <div id="urlencoder">
-        <input type="text" placeholder="URL encoder">
+        <h3>Url builder:</h3>
 
-        <div>?href=</div>
+        <div class="field">
+            <label>href:</label>
+            <input data-key="href" type="text" placeholder="http://...">
+        </div>
+
+        <div class="field">
+            <label>referer:</label>
+            <input data-key="referer" type="text" placeholder="http://... Default: Auto">
+        </div>
+
+        <div class="field">
+            <label>utm:</label>
+            <input data-key="utm" type="checkbox" value="">
+            <i>Default: false</i>
+        </div>
+
+        <div class="field">
+            <label>click_element:</label>
+            <input data-key="click_element" type="text" placeholder="document">
+        </div>
+
+        <div class="field">
+            <label>disable_click:</label>
+            <input data-key="disable_click" type="checkbox" value="">
+            <i>Default: false</i>
+        </div>
+
+        <div class="url"></div>
     </div>
 
     <script src="js/jquery-2.0.2.min.js"></script>
     <script>
         $(document).ready(function(){
-            $('#urlencoder input').on('keyup', function() {
-                $('#urlencoder div').html('?href=' + encodeURIComponent($(this).val()));
+            $('#urlencoder input').on('keyup change', function() {
+
+                var params = {};
+                $('#urlencoder input').each(function() {
+                    var key = $(this).data('key');
+                    var val = $(this).val();
+                    var checked = $(this).prop('checked');
+
+                    if(val && !checked) {
+                        params[key] = val;
+                    }
+
+                    if(checked) {
+                        params[key] = '1';
+                    }
+                });
+
+                $('#urlencoder div.url').html('?' + $.param(params));
             });
         });
     </script>

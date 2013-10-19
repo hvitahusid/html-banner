@@ -10,9 +10,10 @@
         // Set default config and overwrite config options with url parameters if set:
         this.config = $.extend({
             href: null,
+            params: {},
             referer: null,
             utm: false,
-            params: {},
+            click_element: document,
             disable_click: false,
             onClick: null
         }, this.config, this.url.param());
@@ -20,8 +21,8 @@
         // Event Listenters:
         var _this = this;
         if(!this.config.disable_click) {
-            $(document).on('click', function() {
-                _this.onClick.apply(_this, []);
+            $(this.config.click_element).on('click', function() {
+                _this.onClick.call(_this, this);
             });
         }
     };
@@ -58,7 +59,7 @@
         return href.attr('protocol') + '://' + href.attr('host') + href.attr('path') + '?' + $.param(href_params);
     };
 
-    HtmlBanner.prototype.onClick = function() {
+    HtmlBanner.prototype.onClick = function(el) {
         var ref = this.get_referer();
         var ref_str = [ref.attr('host'), ref.attr('path')].join('');
 
@@ -67,7 +68,7 @@
         }
 
         if(this.config.onClick) {
-            this.config.onClick.apply(this, []);
+            this.config.onClick.call(this);
         }
 
         window.open(this.get_href(), '_NEW').focus();

@@ -42,8 +42,8 @@ var html_banner = new HtmlBanner({
 });
 
 html_banner.get_referer();
-# Returns: <current domain> i.e. "localhost" or <medium> ("mbl.is", "visir.is")
+// Returns: <current domain> i.e. "localhost" or <medium> ("mbl.is", "visir.is")
 
 html_banner.get_href();
-# Returns: <compiled href> in this case: "http://hvitahusid.is?test=test&example=example#example_fragment"
+// Returns: <compiled href> in this case: "http://hvitahusid.is?test=test&example=example#example_fragment"
 ~~~

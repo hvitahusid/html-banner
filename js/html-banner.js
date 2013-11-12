@@ -56,7 +56,9 @@
             href_params.utm_medium = 'banner';
         }
 
-        return href.attr('protocol') + '://' + href.attr('host') + href.attr('path') + '?' + $.param(href_params);
+        var href_params_str = $.isEmptyObject(href_params) ? '' : '?' + $.param(href_params);
+
+        return href.attr('protocol') + '://' + href.attr('host') + href.attr('path') + href_params_str;
     };
 
     HtmlBanner.prototype.onClick = function(el) {

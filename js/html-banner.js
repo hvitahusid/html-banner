@@ -21,9 +21,17 @@
         // Event Listenters:
         var _this = this;
         if(!this.config.disable_click) {
-            $(this.config.click_element).on('click', function() {
+            var ce = this.config.click_element;
+            
+            $(ce).on('click', function() {
                 _this.onClick.call(_this, this);
             });
+
+            if(ce === document) {
+                $('body').css('cursor', 'pointer');
+            } else {
+                $(ce).css('cursor', 'pointer');
+            }
         }
     };
 
@@ -43,6 +51,10 @@
     };
 
     HtmlBanner.prototype.get_href = function() {
+        if(!this.config.href) {
+            return null;
+        }
+
         var href = purl(this.config.href, true);
         var href_params = href.param();
 
@@ -58,7 +70,9 @@
 
         var href_params_str = $.isEmptyObject(href_params) ? '' : '?' + $.param(href_params);
 
-        return href.attr('protocol') + '://' + href.attr('host') + href.attr('path') + href_params_str;
+        var fragment = href.attr('fragment') ? '#' + href.attr('fragment') : '';
+
+        return href.attr('protocol') + '://' + href.attr('host') + href.attr('path') + href_params_str + fragment;
     };
 
     HtmlBanner.prototype.onClick = function(el) {
@@ -73,7 +87,10 @@
             this.config.onClick.call(this);
         }
 
-        window.open(this.get_href(), '_NEW').focus();
+        var href = this.get_href();
+        if(href) {
+            window.open(href, '_NEW').focus();
+        }
     };
 
     global.HtmlBanner = HtmlBanner;

@@ -13,7 +13,6 @@
     <link rel="shortcut icon" href="favicon.ico">
 
     <link rel="stylesheet" type="text/css" href="css/normalize.css">    
-    <link rel="stylesheet" type="text/css" href="css/html-banner.css">
 
     <script src="js/modernizr-2.6.2.min.js"></script>
 </head>
@@ -41,11 +40,6 @@
     </script>
 
     <script>
-        // How to overwrite onClick parameter:
-        // HtmlBanner.prototype.onClick = function(el) {
-        //     console.log('onClick overwrite');
-        // };
-
         // Note: All config options can be overwritten by parameters in url.
         var html_banner = new HtmlBanner({
             href: 'http://django.is/',  // Default: null
@@ -54,12 +48,11 @@
                 utm_term: 'test',
                 utm_campaign: 'test'
             },
-            referer: null,  // Default: null
             utm: true,  // Default: false
             click_element: document,  // Default: document
             disable_click: false,  // Default: false
             onClick: function() {  // Default: none
-                console.log('click', this);
+                // Insert some extra on click code here...
             }
         });
     </script>
